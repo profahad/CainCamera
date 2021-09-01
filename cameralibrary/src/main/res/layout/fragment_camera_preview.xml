@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,8 +12,7 @@
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </com.cgfay.camera.widget.CameraMeasureFrameLayout>
+        app:layout_constraintTop_toTopOf="parent"></com.cgfay.camera.widget.CameraMeasureFrameLayout>
 
     <!--  倒计时  -->
     <com.cgfay.camera.widget.RecordCountDownView
@@ -27,7 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/layout_camera_preview"
-        app:layout_constraintBottom_toBottomOf="@id/layout_camera_preview"/>
+        app:layout_constraintBottom_toBottomOf="@id/layout_camera_preview" />
 
     <!-- 录制进度条 -->
     <com.cgfay.camera.widget.RecordProgressView
@@ -39,7 +37,7 @@
         app:divider_width="@dimen/dp1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/layout_camera_preview"/>
+        app:layout_constraintTop_toTopOf="@+id/layout_camera_preview" />
 
     <!-- fps 提示 -->
     <TextView
@@ -52,7 +50,7 @@
         android:layout_marginEnd="@dimen/fps_margin"
         android:textColor="@android:color/holo_orange_dark"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/layout_camera_preview"/>
+        app:layout_constraintTop_toTopOf="@id/layout_camera_preview" />
 
     <!--  顶部布局  -->
     <com.cgfay.camera.widget.CameraPreviewTopbar
@@ -62,7 +60,7 @@
         android:layout_marginTop="@dimen/dp10"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/layout_camera_preview"/>
+        app:layout_constraintTop_toTopOf="@id/layout_camera_preview" />
 
     <!-- 速度选择条 -->
     <com.cgfay.camera.widget.RecordSpeedLevelBar
@@ -75,7 +73,7 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/btn_record"/>
+        app:layout_constraintBottom_toTopOf="@+id/btn_record" />
 
     <!-- 录制按钮 -->
     <com.cgfay.camera.widget.RecordButton
@@ -93,7 +91,7 @@
         app:rectWidthMax="@dimen/dp55"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 
     <!-- 贴纸 -->
@@ -113,14 +111,15 @@
             android:id="@+id/iv_stickers"
             android:layout_width="@dimen/preview_sticker_size"
             android:layout_height="@dimen/preview_sticker_size"
-            android:background="@drawable/ic_camera_sticker_light"/>
+            android:background="@drawable/ic_camera_sticker_light" />
+
         <TextView
             android:id="@+id/tv_stickers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:text="@string/btn_stickers"
-            android:textSize="@dimen/dp12"/>
+            android:textSize="@dimen/dp12" />
     </LinearLayout>
 
     <!-- 上传媒体 -->
@@ -135,17 +134,20 @@
         app:layout_constraintTop_toTopOf="@id/btn_record"
         app:layout_constraintBottom_toBottomOf="@id/btn_record"
         app:layout_constraintHorizontal_bias="0.85">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/dp2"
             android:background="@drawable/bg_btn_media">
+
             <ImageView
                 android:id="@+id/btn_media"
                 android:layout_width="@dimen/preview_album_size"
                 android:layout_height="@dimen/preview_album_size"
                 android:background="@drawable/ic_camera_gallery_light" />
         </LinearLayout>
+
         <TextView
             android:id="@+id/tv_media_title"
             android:layout_width="wrap_content"
@@ -157,7 +159,7 @@
             app:layout_constraintStart_toStartOf="@id/layout_media"
             app:layout_constraintEnd_toEndOf="@id/layout_media"
             app:layout_constraintTop_toBottomOf="@id/layout_media"
-            app:layout_constraintBottom_toBottomOf="@id/btn_record"/>
+            app:layout_constraintBottom_toBottomOf="@id/btn_record" />
     </LinearLayout>
 
     <!--   删除预览控件   -->
@@ -179,7 +181,7 @@
             android:layout_height="@dimen/button_preview_width_height"
             android:background="@drawable/ic_camera_record_delete"
             android:layout_marginEnd="@dimen/dp20"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <!-- 预览 -->
         <Button
@@ -187,7 +189,7 @@
             android:layout_width="@dimen/button_preview_width_height"
             android:layout_height="@dimen/button_preview_width_height"
             android:background="@drawable/ic_camera_record_done"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- 底部指示器 -->
@@ -203,7 +205,7 @@
         app:tabTextAppearance="@style/CameraTabTextStyle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <!--  圆形指示器  -->
     <View
@@ -214,7 +216,7 @@
         android:background="@drawable/bg_tab_indicator"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <!--  浮窗容器  -->
     <FrameLayout
@@ -223,5 +225,5 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

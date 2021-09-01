@@ -5,12 +5,15 @@
     <application>
         <activity
             android:name=".activity.VideoCutActivity"
-            android:theme="@style/VideoTheme" />
+            android:theme="@style/VideoTheme"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.VideoEditActivity"
-            android:theme="@style/VideoTheme" />
+            android:theme="@style/VideoTheme"
+            android:screenOrientation="portrait"/>
         <activity android:name=".activity.MultiVideoActivity"
-            android:theme="@style/VideoTheme"/>
+            android:theme="@style/VideoTheme"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

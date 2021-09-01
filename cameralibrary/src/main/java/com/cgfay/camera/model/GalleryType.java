@@ -7,4 +7,5 @@ public enum GalleryType {
     PICTURE,        // 图片
     VIDEO_60S,      // 拍60秒
     VIDEO_15S,      // 拍15秒
+    VIDEO_3M,
 }

@@ -1,10 +1,12 @@
 package com.cgfay.camera.widget;
 
 import android.content.Context;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cgfay.camera.model.PreviewType;
 import com.cgfay.cameralibrary.R;
 
 import java.lang.annotation.Retention;
@@ -27,10 +30,12 @@ public class CameraPreviewTopbar extends ConstraintLayout implements View.OnClic
     public static final int PanelSpeedBar = 1;
     public static final int PanelFilter = 2;
     public static final int PanelSetting = 3;
+
     @RestrictTo(LIBRARY_GROUP)
     @IntDef(value = {PanelMusic, PanelSpeedBar, PanelFilter, PanelSetting})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface PanelType {}
+    public @interface PanelType {
+    }
 
     private static final int ANIMATION_DURATION = 400;
 
@@ -193,7 +198,20 @@ public class CameraPreviewTopbar extends ConstraintLayout implements View.OnClic
     }
 
     /**
+     *
+     */
+    public void arrangeControls(PreviewType type) {
+        mBtnMusic.setVisibility(GONE);
+        mBtnSpeed.setVisibility(GONE);
+        mBtnEffect.setVisibility(GONE);
+        mBtnSetting.setVisibility(GONE);
+
+        mBtnClose.setVisibility(type == PreviewType.VIDEO_HIDE_CONTROLS_ONLY ? VISIBLE : GONE);
+    }
+
+    /**
      * 速度条是否打开
+     *
      * @param open
      */
     public void setSpeedBarOpen(boolean open) {
@@ -204,6 +222,7 @@ public class CameraPreviewTopbar extends ConstraintLayout implements View.OnClic
 
     /**
      * 设置音乐名称
+     *
      * @param musicName
      */
     public void setSelectedMusic(@Nullable String musicName) {

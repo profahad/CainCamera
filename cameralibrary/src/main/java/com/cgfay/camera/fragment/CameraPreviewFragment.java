@@ -11,6 +11,7 @@ import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -34,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cgfay.camera.loader.impl.CameraMediaLoader;
+import com.cgfay.camera.model.PreviewType;
 import com.cgfay.camera.presenter.CameraPreviewPresenter;
 import com.cgfay.camera.widget.CameraTextureView;
 import com.cgfay.camera.widget.CameraPreviewTopbar;
@@ -182,6 +184,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 初始化页面
+     *
      * @param view
      */
     private void initView(View view) {
@@ -215,6 +218,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
      */
     private void initPreviewTopbar() {
         mPreviewTopbar = mContentView.findViewById(R.id.camera_preview_topbar);
+        mPreviewTopbar.arrangeControls(mCameraParam.previewType);
         mPreviewTopbar.addOnCameraCloseListener(this::closeCamera)
                 .addOnCameraSwitchListener(this::switchCamera)
                 .addOnShowPanelListener(type -> {
@@ -244,6 +248,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 初始化底部布局
+     *
      * @param view
      */
     private void initBottomLayout(@NonNull View view) {
@@ -269,6 +274,13 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
         mBtnNext = view.findViewById(R.id.btn_goto_edit);
         mBtnNext.setOnClickListener(this);
 
+        mBtnStickers.setVisibility(mCameraParam.previewType != PreviewType.VIDEO_HIDE_CONTROLS_ONLY
+                ? View.VISIBLE
+                : View.GONE);
+        mLayoutMedia.setVisibility(mCameraParam.previewType != PreviewType.VIDEO_HIDE_CONTROLS_ONLY
+                ? View.VISIBLE
+                : View.GONE);
+
         setShowingSpeedBar(mSpeedBarShowing);
     }
 
@@ -280,9 +292,9 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
         mCameraTabView = mContentView.findViewById(R.id.tl_camera_tab);
 
         mCameraTabView.addTab(mCameraTabView.newTab().setText(R.string.tab_picture));
-        mCameraTabView.addTab(mCameraTabView.newTab().setText(R.string.tab_video_60s));
-        mCameraTabView.addTab(mCameraTabView.newTab().setText(R.string.tab_video_15s), true);
-        mCameraTabView.addTab(mCameraTabView.newTab().setText(R.string.tab_video_picture));
+        mCameraTabView.addTab(mCameraTabView.newTab().setText(R.string.tab_video));
+        //mCameraTabView.addTab(mCameraTabView.newTab().setText(R.string.tab_video_15s), true);
+        //mCameraTabView.addTab(mCameraTabView.newTab().setText(R.string.tab_video_picture));
 
         mCameraTabView.setIndicateCenter(true);
         mCameraTabView.setScrollAutoSelected(true);
@@ -299,6 +311,16 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
                         mBtnRecord.setRecordEnable(false);
                     }
                 } else if (position == 1) {
+                    mCameraParam.mGalleryType = GalleryType.VIDEO_3M;
+                    // 请求录音权限
+                    if (!isRecordAudioEnable()) {
+                        PermissionUtils.requestRecordSoundPermission(CameraPreviewFragment.this);
+                    }
+                    if (mBtnRecord != null) {
+                        mBtnRecord.setRecordEnable(true);
+                    }
+                    mPreviewPresenter.setRecordSeconds(60 * 3);
+                } else if (position == 2) {
                     mCameraParam.mGalleryType = GalleryType.VIDEO_60S;
                     // 请求录音权限
                     if (!isRecordAudioEnable()) {
@@ -308,7 +330,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
                         mBtnRecord.setRecordEnable(true);
                     }
                     mPreviewPresenter.setRecordSeconds(60);
-                } else if (position == 2) {
+                } else if (position == 3) {
                     mCameraParam.mGalleryType = GalleryType.VIDEO_15S;
                     // 请求录音权限
                     if (!isRecordAudioEnable()) {
@@ -318,7 +340,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
                         mBtnRecord.setRecordEnable(true);
                     }
                     mPreviewPresenter.setRecordSeconds(15);
-                } else if (position == 3) {
+                } else if (position == 4) {
                     showVideoPicture();
                 }
             }
@@ -333,7 +355,14 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
             }
         });
-        mPreviewPresenter.setRecordSeconds(15);
+
+        mCameraParam.mGalleryType = GalleryType.PICTURE;
+        if (!isStorageEnable()) {
+            PermissionUtils.requestRecordSoundPermission(CameraPreviewFragment.this);
+        }
+        if (mBtnRecord != null) {
+            mBtnRecord.setRecordEnable(false);
+        }
     }
 
     /**
@@ -411,6 +440,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 处理返回按钮事件
+     *
      * @return 是否拦截返回按键事件
      */
     public boolean onBackPressed() {
@@ -477,6 +507,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 是否显示速度条
+     *
      * @param show
      */
     private void setShowingSpeedBar(boolean show) {
@@ -661,9 +692,10 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
      * 隐藏所有布局
      */
     private void hideAllLayout() {
-        mMainHandler.post(()-> {
+        mMainHandler.post(() -> {
             if (mPreviewTopbar != null) {
-                mPreviewTopbar.hideAllView();
+                if (mCameraParam.previewType != PreviewType.VIDEO_HIDE_CONTROLS_ONLY)
+                    mPreviewTopbar.hideAllView();
             }
             if (mSpeedBar != null) {
                 mSpeedBar.setVisibility(View.GONE);
@@ -695,7 +727,8 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
     private void hideWithoutSwitch() {
         mMainHandler.post(() -> {
             if (mPreviewTopbar != null) {
-                mPreviewTopbar.hideWithoutSwitch();
+                if (mCameraParam.previewType != PreviewType.VIDEO_HIDE_CONTROLS_ONLY)
+                    mPreviewTopbar.hideWithoutSwitch();
             }
             if (mSpeedBar != null) {
                 mSpeedBar.setVisibility(View.GONE);
@@ -725,9 +758,10 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
      * 录制状态隐藏
      */
     public void hideOnRecording() {
-        mMainHandler.post(()-> {
+        mMainHandler.post(() -> {
             if (mPreviewTopbar != null) {
-                mPreviewTopbar.hideAllView();
+                if (mCameraParam.previewType != PreviewType.VIDEO_HIDE_CONTROLS_ONLY)
+                    mPreviewTopbar.hideAllView();
             }
             if (mSpeedBar != null) {
                 mSpeedBar.setVisibility(View.GONE);
@@ -754,9 +788,10 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
      * 恢复所有布局
      */
     public void resetAllLayout() {
-        mMainHandler.post(()-> {
+        mMainHandler.post(() -> {
             if (mPreviewTopbar != null) {
-                mPreviewTopbar.resetAllView();
+                if (mCameraParam.previewType != PreviewType.VIDEO_HIDE_CONTROLS_ONLY)
+                    mPreviewTopbar.resetAllView();
             }
             setShowingSpeedBar(mSpeedBarShowing);
             if (mBtnStickers != null) {
@@ -845,24 +880,24 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
         MusicPickerFragment fragment = new MusicPickerFragment();
         fragment.addOnMusicSelectedListener(
                 new MusicPickerFragment.OnMusicSelectedListener() {
-            @Override
-            public void onMusicSelectClose() {
-                Fragment currentFragment = getChildFragmentManager().findFragmentByTag(MusicPickerFragment.TAG);
-                if (currentFragment != null) {
-                    getChildFragmentManager()
-                            .beginTransaction()
-                            .remove(currentFragment)
-                            .commitNowAllowingStateLoss();
-                }
-            }
+                    @Override
+                    public void onMusicSelectClose() {
+                        Fragment currentFragment = getChildFragmentManager().findFragmentByTag(MusicPickerFragment.TAG);
+                        if (currentFragment != null) {
+                            getChildFragmentManager()
+                                    .beginTransaction()
+                                    .remove(currentFragment)
+                                    .commitNowAllowingStateLoss();
+                        }
+                    }
 
-            @Override
-            public void onMusicSelected(MusicData musicData) {
-                resetAllLayout();
-                mPreviewPresenter.setMusicPath(musicData.getPath());
-                mPreviewTopbar.setSelectedMusic(musicData.getName());
-            }
-        });
+                    @Override
+                    public void onMusicSelected(MusicData musicData) {
+                        resetAllLayout();
+                        mPreviewPresenter.setMusicPath(musicData.getPath());
+                        mPreviewTopbar.setSelectedMusic(musicData.getName());
+                    }
+                });
         getChildFragmentManager()
                 .beginTransaction()
                 .add(fragment, MusicPickerFragment.TAG)
@@ -873,7 +908,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
      * 打开媒体库选择页面
      */
     private void openMediaPicker() {
-        mMainHandler.post(()-> {
+        mMainHandler.post(() -> {
             MediaPicker.from(this)
                     .showImage(true)
                     .showVideo(true)
@@ -1006,6 +1041,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 显示fps
+     *
      * @param fps
      */
     public void showFps(final float fps) {
@@ -1021,6 +1057,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 更新录制时间
+     *
      * @param duration
      */
     public void updateRecordProgress(final float duration) {
@@ -1031,6 +1068,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 添加一段进度
+     *
      * @param progress
      */
     public void addProgressSegment(float progress) {
@@ -1096,6 +1134,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     // -------------------------------------- 合成提示 --------------------------------------
     private Dialog mProgressDialog;
+
     /**
      * 显示合成进度
      */
@@ -1118,8 +1157,10 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
     }
 
     private Toast mToast;
+
     /**
      * 显示Toast提示
+     *
      * @param msg
      */
     public void showToast(String msg) {
@@ -1159,6 +1200,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 是否允许拍摄
+     *
      * @return
      */
     private boolean isCameraEnable() {
@@ -1167,6 +1209,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 判断是否可以录制
+     *
      * @return
      */
     private boolean isRecordAudioEnable() {
@@ -1175,6 +1218,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
 
     /**
      * 判断是否可以读取本地媒体
+     *
      * @return
      */
     private boolean isStorageEnable() {
@@ -1196,7 +1240,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
             if (mBtnMedia != null) {
                 new CameraMediaLoader().loadThumbnail(mActivity, mBtnMedia, albumData.getCoverUri(),
                         R.drawable.ic_camera_thumbnail_placeholder,
-                        (int)getResources().getDimension(R.dimen.dp4));
+                        (int) getResources().getDimension(R.dimen.dp4));
             }
             cursor.close();
             destroyImageLoader();

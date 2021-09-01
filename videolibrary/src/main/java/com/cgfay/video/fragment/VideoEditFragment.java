@@ -1,14 +1,18 @@
 package com.cgfay.video.fragment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -41,6 +45,7 @@ import com.cgfay.uitls.utils.FileUtils;
 import com.cgfay.uitls.utils.StringUtils;
 import com.cgfay.uitls.widget.RoundOutlineProvider;
 import com.cgfay.video.R;
+import com.cgfay.video.activity.VideoEditActivity;
 import com.cgfay.video.adapter.VideoEffectAdapter;
 import com.cgfay.video.adapter.VideoEffectCategoryAdapter;
 import com.cgfay.video.adapter.VideoFilterAdapter;
@@ -50,7 +55,9 @@ import com.cgfay.video.widget.EffectSelectedSeekBar;
 import com.cgfay.video.widget.VideoTextureView;
 import com.cgfay.video.widget.WaveCutView;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * 特效编辑页面
@@ -139,7 +146,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mContentView =  inflater.inflate(R.layout.fragment_video_edit, container, false);
+        mContentView = inflater.inflate(R.layout.fragment_video_edit, container, false);
         return mContentView;
     }
 
@@ -354,6 +361,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 是否显示音量调节布局
+     *
      * @param showSubView
      */
     private void showVolumeChangeLayout(boolean showSubView) {
@@ -362,13 +370,13 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
             if (mLayoutVolumeChange == null) {
                 mLayoutVolumeChange = LayoutInflater.from(mActivity).inflate(R.layout.view_volume_change, null);
                 mLayoutVolumeChange.findViewById(R.id.iv_volume_change_save).setOnClickListener(this);
-                ((SeekBar)mLayoutVolumeChange.findViewById(R.id.sb_volume_source))
+                ((SeekBar) mLayoutVolumeChange.findViewById(R.id.sb_volume_source))
                         .setOnSeekBarChangeListener(mVolumeChangeListener);
                 mSbBackgroundVolume = mLayoutVolumeChange.findViewById(R.id.sb_volume_background);
                 mSbBackgroundVolume.setOnSeekBarChangeListener(mVolumeChangeListener);
                 if (mMusicPath != null) {
                     mSbBackgroundVolume.setMax(100);
-                    mSbBackgroundVolume.setProgress((int)(mBackgroundVolumePercent * 100));
+                    mSbBackgroundVolume.setProgress((int) (mBackgroundVolumePercent * 100));
                 } else {
                     mSbBackgroundVolume.setMax(0);
                     mSbBackgroundVolume.setProgress(0);
@@ -386,6 +394,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 是否显示剪辑音乐布局
+     *
      * @param showSubView
      */
     private void showCutMusicLayout(boolean showSubView) {
@@ -435,6 +444,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 显示特效页面
+     *
      * @param showSubView
      */
     private void showChangeEffectLayout(boolean showSubView) {
@@ -449,14 +459,14 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
             mPlayViewWidth = mLayoutPlayer.getWidth();
             mPlayViewHeight = mLayoutPlayer.getHeight();
             final int minPlayViewHeight = mPlayViewHeight - DensityUtils.dp2px(mActivity, 200);
-            final float playerViewScale = mPlayViewWidth/(float)mPlayViewHeight;
+            final float playerViewScale = mPlayViewWidth / (float) mPlayViewHeight;
             effectShowAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    effectParams.bottomMargin = (int) (-DensityUtils.dp2px(mActivity, 200) * (float)animation.getAnimatedValue());
+                    effectParams.bottomMargin = (int) (-DensityUtils.dp2px(mActivity, 200) * (float) animation.getAnimatedValue());
                     mLayoutEffect.setLayoutParams(effectParams);
-                    playerParams.width = (int) ((minPlayViewHeight + ((mPlayViewHeight - minPlayViewHeight)* (float)animation.getAnimatedValue())) * playerViewScale);
-                    playerParams.bottomMargin = (int) (DensityUtils.dp2px(mActivity, 18) * (1f - (float)animation.getAnimatedValue()));
+                    playerParams.width = (int) ((minPlayViewHeight + ((mPlayViewHeight - minPlayViewHeight) * (float) animation.getAnimatedValue())) * playerViewScale);
+                    playerParams.bottomMargin = (int) (DensityUtils.dp2px(mActivity, 18) * (1f - (float) animation.getAnimatedValue()));
                     mLayoutPlayer.setLayoutParams(playerParams);
                 }
             });
@@ -477,14 +487,14 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
             final LinearLayout.LayoutParams effectParams = (LinearLayout.LayoutParams) mLayoutEffect.getLayoutParams();
             final LinearLayout.LayoutParams playerParams = (LinearLayout.LayoutParams) mLayoutPlayer.getLayoutParams();
             final int minPlayViewHeight = mPlayViewHeight - DensityUtils.dp2px(mActivity, 200);
-            final float playerViewScale = mPlayViewWidth/(float)mPlayViewHeight;
+            final float playerViewScale = mPlayViewWidth / (float) mPlayViewHeight;
             effectExitAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    effectParams.bottomMargin = (int) (-DensityUtils.dp2px(mActivity, 200) * (float)animation.getAnimatedValue());
+                    effectParams.bottomMargin = (int) (-DensityUtils.dp2px(mActivity, 200) * (float) animation.getAnimatedValue());
                     mLayoutEffect.setLayoutParams(effectParams);
-                    playerParams.width = (int) ((minPlayViewHeight + ((mPlayViewHeight - minPlayViewHeight)* (float)animation.getAnimatedValue())) * playerViewScale);
-                    playerParams.bottomMargin = (int) (DensityUtils.dp2px(mActivity, 18) * (1f - (float)animation.getAnimatedValue()));
+                    playerParams.width = (int) ((minPlayViewHeight + ((mPlayViewHeight - minPlayViewHeight) * (float) animation.getAnimatedValue())) * playerViewScale);
+                    playerParams.bottomMargin = (int) (DensityUtils.dp2px(mActivity, 18) * (1f - (float) animation.getAnimatedValue()));
                     mLayoutPlayer.setLayoutParams(playerParams);
                 }
             });
@@ -497,6 +507,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 切换特效目录
+     *
      * @param type
      */
     private void changeEffectCategoryView(EffectMimeType type) {
@@ -513,6 +524,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 显示选择滤镜页面
+     *
      * @param showSubView
      */
     private void showSelectFilterLayout(boolean showSubView) {
@@ -542,6 +554,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 选择贴纸页面
+     *
      * @param showSubView
      */
     private void showSelectStickersLayout(boolean showSubView) {
@@ -556,7 +569,14 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
      * 保存所有变更，合成视频
      */
     private void saveAllChange() {
-
+        if (FileUtils.moveFile(requireContext(),
+                mVideoPath,
+                "CB.Media") != null) {
+            Log.d("Test:Old", mVideoPath);
+            Intent data = new Intent();
+            mActivity.setResult(RESULT_OK, data);
+            mActivity.finish();
+        }
     }
 
     private void resumePlayer() {
@@ -576,7 +596,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
         }
         if (mAudioPlayer != null) {
             mAudioPlayer.start();
-            mAudioPlayer.seekTo((int)timeMs);
+            mAudioPlayer.seekTo((int) timeMs);
         }
         mIvVideoPlay.setVisibility(View.GONE);
     }
@@ -593,6 +613,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 设置视频流路径
+     *
      * @param videoPath
      */
     public void setVideoPath(String videoPath) {
@@ -601,6 +622,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 设置背景音乐路径
+     *
      * @param musicPath
      * @param duration
      */
@@ -627,7 +649,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
         mAudioPlayer.setVolume(mBackgroundVolumePercent, mBackgroundVolumePercent);
         if (mSbBackgroundVolume != null) {
             mSbBackgroundVolume.setMax(100);
-            mSbBackgroundVolume.setProgress((int)(mBackgroundVolumePercent * 100));
+            mSbBackgroundVolume.setProgress((int) (mBackgroundVolumePercent * 100));
         }
         if (mWaveCutView != null) {
             mWaveCutView.setMax((int) mBackgroundDuration);
@@ -683,10 +705,10 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
                             mSbEffectSelected.setProgress(mp.getCurrentPosition());
                         }
                         if (mTvVideoCurrent != null) {
-                            mTvVideoCurrent.setText(StringUtils.generateStandardTime((int)mp.getCurrentPosition()));
+                            mTvVideoCurrent.setText(StringUtils.generateStandardTime((int) mp.getCurrentPosition()));
                         }
                         if (mTvVideoDuration != null) {
-                            mTvVideoDuration.setText(StringUtils.generateStandardTime((int)mp.getDuration()));
+                            mTvVideoDuration.setText(StringUtils.generateStandardTime((int) mp.getDuration()));
                         }
                     }
                 });
@@ -721,10 +743,10 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
             @Override
             public void onCurrentPosition(IMediaPlayer mp, long current, long duration) {
                 if (mTvVideoCurrent != null) {
-                    mTvVideoCurrent.setText(StringUtils.generateStandardTime((int)current));
+                    mTvVideoCurrent.setText(StringUtils.generateStandardTime((int) current));
                 }
                 if (mSbEffectSelected != null) {
-                    mSbEffectSelected.setProgress((float)current);
+                    mSbEffectSelected.setProgress((float) current);
                 }
             }
         });
@@ -772,7 +794,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             if (seekBar.getId() == R.id.sb_volume_source && fromUser) {
-                mSourceVolumePercent = (float) progress  / (float) seekBar.getMax();
+                mSourceVolumePercent = (float) progress / (float) seekBar.getMax();
             } else if (seekBar.getId() == R.id.sb_volume_background && fromUser) {
                 if (seekBar.getMax() > 0) {
                     mBackgroundVolumePercent = (float) progress / (float) seekBar.getMax();
@@ -812,7 +834,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
         @Override
         public void onDragFinish(float position) {
             if (mAudioPlayer != null) {
-                mAudioPlayer.seekTo((int)position);
+                mAudioPlayer.seekTo((int) position);
             }
         }
     };
@@ -867,6 +889,7 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
 
     /**
      * 添加页面操作监听器
+     *
      * @param listener
      */
     public void setOnSelectMusicListener(OnSelectMusicListener listener) {

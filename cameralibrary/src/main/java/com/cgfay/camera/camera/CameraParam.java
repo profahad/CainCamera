@@ -7,6 +7,7 @@ import com.cgfay.camera.listener.OnFpsListener;
 import com.cgfay.camera.model.AspectRatio;
 import com.cgfay.camera.model.GalleryType;
 import com.cgfay.camera.listener.OnPreviewCaptureListener;
+import com.cgfay.camera.model.PreviewType;
 import com.cgfay.filter.glfilter.beauty.bean.BeautyParam;
 
 /**
@@ -32,7 +33,7 @@ public final class CameraParam {
     public static final float Ratio_16_9 = 0.5625f;
 
     // 对焦权重最大值
-    public static final int Weight =  100;
+    public static final int Weight = 100;
 
     // 是否显示人脸关键点
     public boolean drawFacePoints;
@@ -101,6 +102,9 @@ public final class CameraParam {
     // 美颜参数
     public BeautyParam beauty;
 
+
+    public PreviewType previewType = PreviewType.FULL_VERSION;
+
     private static final CameraParam mInstance = new CameraParam();
 
     private CameraParam() {
@@ -147,6 +151,7 @@ public final class CameraParam {
 
     /**
      * 获取相机配置参数
+     *
      * @return
      */
     public static CameraParam getInstance() {
@@ -155,6 +160,7 @@ public final class CameraParam {
 
     /**
      * 设置预览长宽比
+     *
      * @param aspectRatio
      */
     public void setAspectRatio(AspectRatio aspectRatio) {
@@ -172,6 +178,7 @@ public final class CameraParam {
 
     /**
      * 设置是否后置相机
+     *
      * @param backCamera
      */
     public void setBackCamera(boolean backCamera) {
@@ -185,6 +192,7 @@ public final class CameraParam {
 
     /**
      * 设置对焦权重
+     *
      * @param focusWeight
      */
     public void setFocusWeight(int focusWeight) {

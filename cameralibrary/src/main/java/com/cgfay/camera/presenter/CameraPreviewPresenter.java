@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
@@ -57,6 +58,7 @@ import java.util.List;
 
 /**
  * 预览的presenter
+ *
  * @author CainHuang
  * @date 2019/7/3
  */
@@ -609,9 +611,8 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
             String path = mVideoList.get(0).getFileName();
             String outputPath = generateOutputPath();
             FileUtils.copyFile(path, outputPath);
-            Intent intent = new Intent(mActivity, VideoEditActivity.class);
-            intent.putExtra(VideoEditActivity.VIDEO_PATH, outputPath);
-            mActivity.startActivity(intent);
+            new File(path).delete();
+            onOpenVideoEditPage(outputPath);
         } else {
             getTarget().showConcatProgressDialog();
             List<String> videos = new ArrayList<>();
@@ -635,6 +636,7 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
 
     /**
      * 创建合成的视频文件名
+     *
      * @return
      */
     public String generateOutputPath() {
@@ -643,12 +645,14 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
 
     /**
      * 打开视频编辑页面
+     *
      * @param path
      */
     public void onOpenVideoEditPage(String path) {
         if (mCameraParam.captureListener != null) {
             mCameraParam.captureListener.onMediaSelectedListener(path, OnPreviewCaptureListener.MediaTypeVideo);
         }
+        mActivity.finish();
     }
 
     // ------------------------------------ 拍照截屏回调 --------------------------------------------
@@ -660,11 +664,14 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
         if (mCameraParam.captureListener != null) {
             mCameraParam.captureListener.onMediaSelectedListener(filePath, OnPreviewCaptureListener.MediaTypePicture);
         }
+        mActivity.finish();
     }
 
     // ------------------------------------ 渲染fps回调 ------------------------------------------
+
     /**
      * fps数值回调
+     *
      * @param fps
      */
     @Override

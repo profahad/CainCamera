@@ -2,40 +2,40 @@
     <string name="app_name">VideoLibrary</string>
 
     <string-array name="video_speed_texts">
-        <item>慢</item>
-        <item>标准</item>
-        <item>快</item>
+        <item>Slow</item>
+        <item>Standard</item>
+        <item>Quick</item>
     </string-array>
 
-    <string name="video_crop_next">下一步</string>
-    <string name="video_crop_time_15">15秒</string>
-    <string name="video_crop_time_120">2分钟</string>
-    <string name="video_crop_selected_time">已选取%1$d秒</string>
-    <string name="video_crop_selected_error">解析数据出现错误，暂不支持该视频</string>
-    <string name="video_crop_progress_tips">处理中...</string>
+    <string name="video_crop_next">Next Step</string>
+    <string name="video_crop_time_15">15 Sec</string>
+    <string name="video_crop_time_120">2 Mins</string>
+    <string name="video_crop_selected_time">%1$d Sec Selected</string>
+    <string name="video_crop_selected_error">There is an error in parsing the data, the video is not supported temporarily</string>
+    <string name="video_crop_progress_tips">Processing...</string>
 
     <!-- 编辑页面 -->
-    <string name="video_edit_back_press">返回上一步会丢失当前效果，是否返回</string>
-    <string name="video_edit_select_music">选配乐</string>
-    <string name="video_edit_voice">声音</string>
-    <string name="video_edit_cut_music">剪音乐</string>
-    <string name="video_edit_effect">特效</string>
-    <string name="video_edit_text">文字</string>
-    <string name="video_edit_filter">滤镜</string>
-    <string name="video_edit_stickers">贴纸</string>
-    <string name="video_edit_next">下一步</string>
-    <string name="video_edit_cancel">取消</string>
-    <string name="video_edit_save">保存</string>
+    <string name="video_edit_back_press">Returning to the previous step will lose the current effect, whether to return</string>
+    <string name="video_edit_select_music">Optional Music</string>
+    <string name="video_edit_voice">Sound</string>
+    <string name="video_edit_cut_music">Cut Music</string>
+    <string name="video_edit_effect">Special Effects</string>
+    <string name="video_edit_text">Word</string>
+    <string name="video_edit_filter">Filters</string>
+    <string name="video_edit_stickers">Stickers</string>
+    <string name="video_edit_next">Next Step</string>
+    <string name="video_edit_cancel">Cancel</string>
+    <string name="video_edit_save">Save</string>
     <!-- 声音控制 -->
-    <string name="video_voice_save">保存</string>
-    <string name="video_voice_source">原声</string>
-    <string name="video_voice_background">配乐</string>
-    <string name="video_cut_music_title">左右拖动声谱以剪取音乐</string>
+    <string name="video_voice_save">Save</string>
+    <string name="video_voice_source">Original Track</string>
+    <string name="video_voice_background">Soundtrack</string>
+    <string name="video_cut_music_title">Drag the sound spectrum left and right to cut the music</string>
 
     <!-- 特效提示 -->
-    <string name="video_edit_effect_hint">选择位置后，按住使用效果</string>
-    <string name="video_edit_effect_cancel">撤销</string>
-    <string name="video_edit_effect_category_filter">滤镜特效</string>
-    <string name="video_edit_effect_category_time">时间特效</string>
+    <string name="video_edit_effect_hint">After selecting the location, press and hold to use the effect</string>
+    <string name="video_edit_effect_cancel">Revoke</string>
+    <string name="video_edit_effect_category_filter">Filter Effects</string>
+    <string name="video_edit_effect_category_time">Time Effects</string>
 
 </resources>

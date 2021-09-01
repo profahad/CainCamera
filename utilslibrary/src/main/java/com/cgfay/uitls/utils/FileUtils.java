@@ -1,7 +1,10 @@
 package com.cgfay.uitls.utils;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
@@ -24,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,10 +42,12 @@ public class FileUtils {
 
     private static final int BUFFER_SIZE = 1024 * 8;
 
-    private FileUtils() {}
+    private FileUtils() {
+    }
 
     /**
      * 检查文件是否存在
+     *
      * @param path
      * @return
      */
@@ -58,6 +62,7 @@ public class FileUtils {
 
     /**
      * 检查文件列表是否存在
+     *
      * @param paths
      * @return
      */
@@ -72,6 +77,7 @@ public class FileUtils {
 
     /**
      * 解码得到文件名
+     *
      * @param path
      * @return
      */
@@ -82,6 +88,7 @@ public class FileUtils {
 
     /**
      * 解码得到文件夹名
+     *
      * @param folderPath
      * @return
      */
@@ -100,6 +107,7 @@ public class FileUtils {
 
     /**
      * 获取文件后缀
+     *
      * @param path
      * @return
      */
@@ -115,9 +123,9 @@ public class FileUtils {
     }
 
 
-
     /**
      * 从Stream中获取String
+     *
      * @param inputStream
      * @return
      * @throws IOException
@@ -136,9 +144,10 @@ public class FileUtils {
 
     /**
      * 将多行字符串写入文件
-     * @param folderPath    文件夹路径
-     * @param name          文件名
-     * @param stringList    字符串列表
+     *
+     * @param folderPath 文件夹路径
+     * @param name       文件名
+     * @param stringList 字符串列表
      * @throws IOException
      */
     public static void writeToFile(String folderPath, String name, List<String> stringList)
@@ -163,6 +172,7 @@ public class FileUtils {
 
     /**
      * 从文件中读入每个的字符串
+     *
      * @param filePath
      * @return
      * @throws IOException
@@ -190,6 +200,7 @@ public class FileUtils {
 
     /**
      * 关闭Reader
+     *
      * @param closeable
      * @return
      */
@@ -215,6 +226,7 @@ public class FileUtils {
 
     /**
      * 复制文件或文件夹
+     *
      * @param oldPath
      * @param newPath
      */
@@ -229,6 +241,7 @@ public class FileUtils {
 
     /**
      * 复制文件
+     *
      * @param oldPath
      * @param newPath
      * @return
@@ -273,6 +286,7 @@ public class FileUtils {
 
     /**
      * 创建 .nomedia 文件
+     *
      * @param path
      */
     public static void createNoMediaFile(String path) {
@@ -288,6 +302,7 @@ public class FileUtils {
 
     /**
      * 创建文件
+     *
      * @param folderPath
      * @param name
      * @return
@@ -306,6 +321,7 @@ public class FileUtils {
 
     /**
      * 创建文件名
+     *
      * @param path
      */
     public static void createFile(String path) {
@@ -322,16 +338,18 @@ public class FileUtils {
 
     /**
      * 创建目录/文件
+     *
      * @param path
      * @return
      */
     public static boolean makeDirectory(String path) {
         File file = new File(path);
-        return file.exists() ? file.isDirectory():file.mkdirs();
+        return file.exists() ? file.isDirectory() : file.mkdirs();
     }
 
     /**
      * 删除文件
+     *
      * @param fileName
      */
     public static boolean deleteFile(String fileName) {
@@ -343,6 +361,7 @@ public class FileUtils {
 
     /**
      * 删除文件
+     *
      * @param file
      * @return
      */
@@ -356,6 +375,7 @@ public class FileUtils {
 
     /**
      * 删除目录
+     *
      * @param path
      */
     public static boolean deleteDir(File path) {
@@ -372,6 +392,7 @@ public class FileUtils {
 
     /**
      * 删除目录
+     *
      * @param path
      */
     public static boolean deleteDir(String path) {
@@ -383,6 +404,7 @@ public class FileUtils {
 
     /**
      * 复制文件夹
+     *
      * @param oldPath
      * @param newPath
      */
@@ -440,10 +462,12 @@ public class FileUtils {
 
     /**
      * 剪切文件
+     *
      * @param oldPath
      * @param newPath
      * @return
      */
+    @Deprecated
     public static boolean moveFile(String oldPath, String newPath) {
         if (TextUtils.isEmpty(oldPath)) {
             return false;
@@ -457,11 +481,64 @@ public class FileUtils {
         return file.renameTo(new File(newPath));
     }
 
+    /**
+     * Move File
+     *
+     * @param context
+     * @param filePath
+     * @param folder
+     * @return
+     */
+    public static String moveFile(Context context,
+                                  String filePath,
+                                  String folder) {
+        try {
+            String path = Environment.getExternalStorageDirectory().toString() + File.separator + Environment.DIRECTORY_MOVIES;
+            File source = new File(filePath);
+            File destination = new File(path + File.separator + folder + File.separator + source.getName());
+            createFolder(context, folder);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                android.os.FileUtils.copy(new FileInputStream(source), new FileOutputStream(destination));
+            } else {
+                copyFile(source.getAbsolutePath(), destination.getAbsolutePath());
+            }
+            source.delete();
+            return destination.getAbsolutePath();
+
+        } catch (Exception e) {
+            Log.e("tag", e.getMessage());
+            return null;
+        }
+    }
+
+    private static File getFilePath(Context mContext, String folder, File source) {
+        ContextWrapper mContextWrapper = new ContextWrapper(mContext);
+        File movDirectory = mContextWrapper.getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+        return new File(movDirectory, folder + File.separator + source.getName());
+    }
+
+
+    public static void createFolder(Context context, String folderName) {
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/" + folderName);
+            String pathCbRecord = String.valueOf(resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues));
+            File folderCbRecord = new File(pathCbRecord);
+            boolean isCreate = folderCbRecord.exists();
+            if (!isCreate) {
+                folderCbRecord.mkdirs();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 遍历某个目录下的所有文件，包括子目录下的文件
+     *
      * @param path 某个目录的绝对路径
-     * @return  返回存放文件绝对路径的列表
+     * @return 返回存放文件绝对路径的列表
      */
     public static List<String> listFolder(String path) {
         List<String> result = new ArrayList<String>();
@@ -481,8 +558,9 @@ public class FileUtils {
 
     /**
      * 从绝对路径中提取文件名
+     *
      * @param absolutePath 绝对路径
-     * @return  不包含后缀的文件名
+     * @return 不包含后缀的文件名
      */
     public static String getFileNameFromAbsolutePath(String absolutePath) {
         int start = absolutePath.lastIndexOf("/");
@@ -500,7 +578,6 @@ public class FileUtils {
 
     /**
      * 递归删除文件和文件夹
-     *
      */
     public static void recursionDeleteFile(File file) {
         // 文件夹则递归删除
@@ -524,7 +601,8 @@ public class FileUtils {
 
     /**
      * 获取某个路径下的所有文件路径
-     * @param absolutePath    需要查找的绝对路径
+     *
+     * @param absolutePath 需要查找的绝对路径
      */
     public static List<String> getAbsolutePathlist(String absolutePath) {
         List<String> fileNames = new ArrayList<String>();
@@ -545,8 +623,9 @@ public class FileUtils {
 
     /**
      * 从文件中读取字符串
+     *
      * @param file 文件
-     * @return  字符串
+     * @return 字符串
      */
     public static String readTextFromFile(File file) {
         String outStr = "";
@@ -567,8 +646,9 @@ public class FileUtils {
 
     /**
      * 将字符串写入到输出文件中
-     * @param outputFile    输出文件
-     * @param strInput      需要写入的字符串内容
+     *
+     * @param outputFile 输出文件
+     * @param strInput   需要写入的字符串内容
      * @return
      */
     public static boolean writeTextToFile(File outputFile, String strInput) {
@@ -585,9 +665,10 @@ public class FileUtils {
 
     /**
      * 是否以追加的形式写入内容
-     * @param path      路径
-     * @param content   内容
-     * @param append    是否写入到末尾
+     *
+     * @param path    路径
+     * @param content 内容
+     * @param append  是否写入到末尾
      */
     public static void writeFile(String path, String content, boolean append) {
         FileWriter fileWriter;
@@ -604,6 +685,7 @@ public class FileUtils {
     /**
      * 根据Uri获取路径, 来自aFileChooser:
      * https://github.com/iPaulPro/aFileChooser
+     *
      * @param context
      * @param uri
      * @return
@@ -662,7 +744,7 @@ public class FileUtils {
                 }
 
                 final String selection = "_id=?";
-                final String[] selectionArgs = new String[] {
+                final String[] selectionArgs = new String[]{
                         split[1]
                 };
 
@@ -690,9 +772,9 @@ public class FileUtils {
      * Get the value of the data column for this Uri. This is useful for
      * MediaStore Uris, and other file-based ContentProviders.
      *
-     * @param context The context.
-     * @param uri The Uri to query.
-     * @param selection (Optional) Filter used in the query.
+     * @param context       The context.
+     * @param uri           The Uri to query.
+     * @param selection     (Optional) Filter used in the query.
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      * @author paulburke
@@ -753,5 +835,30 @@ public class FileUtils {
      */
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    /**
+     * 删除目录
+     *
+     * @param context
+     * @return
+     */
+    public static boolean deleteCacheFiles(Context context) {
+        File path;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            path = context.getExternalCacheDir();
+        } else { // 使用内部存储缓存目录
+            path = context.getCacheDir();
+        }
+
+        if (path != null && path.exists() && path.isDirectory()) {
+            for (File file : path.listFiles()) {
+                if (file.isDirectory())
+                    deleteDir(file);
+                file.delete();
+            }
+            return true;
+        }
+        return false;
     }
 }

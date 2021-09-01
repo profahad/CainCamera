@@ -3,8 +3,10 @@ package com.cgfay.camera;
 import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
+
 import androidx.fragment.app.Fragment;
 
+import com.cgfay.camera.model.PreviewType;
 import com.cgfay.cameralibrary.R;
 import com.cgfay.camera.activity.CameraActivity;
 import com.cgfay.camera.camera.CameraParam;
@@ -24,6 +26,7 @@ public final class PreviewBuilder {
 
     /**
      * 是否显示人脸关键点
+     *
      * @param show
      * @return
      */
@@ -34,6 +37,7 @@ public final class PreviewBuilder {
 
     /**
      * 是否显示fps
+     *
      * @param show
      * @return
      */
@@ -44,6 +48,7 @@ public final class PreviewBuilder {
 
     /**
      * 期望预览帧率
+     *
      * @param fps
      * @return
      */
@@ -54,6 +59,7 @@ public final class PreviewBuilder {
 
     /**
      * 期望宽度
+     *
      * @param width
      * @return
      */
@@ -64,6 +70,7 @@ public final class PreviewBuilder {
 
     /**
      * 期望高度
+     *
      * @param height
      * @return
      */
@@ -74,6 +81,7 @@ public final class PreviewBuilder {
 
     /**
      * 是否高清拍照
+     *
      * @param highDefinition
      * @return
      */
@@ -84,6 +92,7 @@ public final class PreviewBuilder {
 
     /**
      * 是否打开后置摄像头
+     *
      * @param backCamera
      * @return
      */
@@ -97,6 +106,7 @@ public final class PreviewBuilder {
 
     /**
      * 对焦权重
+     *
      * @param weight
      * @return
      */
@@ -107,6 +117,7 @@ public final class PreviewBuilder {
 
     /**
      * 是否允许录制
+     *
      * @param recordable
      * @return
      */
@@ -117,6 +128,7 @@ public final class PreviewBuilder {
 
     /**
      * 录制时间
+     *
      * @param recordTime
      * @return
      */
@@ -127,6 +139,7 @@ public final class PreviewBuilder {
 
     /**
      * 是否录制音频
+     *
      * @param recordAudio
      * @return
      */
@@ -137,6 +150,7 @@ public final class PreviewBuilder {
 
     /**
      * 延时拍摄
+     *
      * @param takeDelay
      * @return
      */
@@ -146,7 +160,19 @@ public final class PreviewBuilder {
     }
 
     /**
+     * PreviewType
+     *
+     * @param type
+     * @return
+     */
+    public PreviewBuilder previewType(PreviewType type) {
+        mCameraParam.previewType = type;
+        return this;
+    }
+
+    /**
      * 是否开启夜光补偿
+     *
      * @param luminousEnhancement
      * @return
      */
@@ -157,6 +183,7 @@ public final class PreviewBuilder {
 
     /**
      * 设置拍照监听器
+     *
      * @param listener
      * @return
      */
