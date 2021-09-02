@@ -571,7 +571,8 @@ public class VideoEditFragment extends Fragment implements View.OnClickListener 
     private void saveAllChange() {
         if (FileUtils.moveFile(requireContext(),
                 mVideoPath,
-                "CB.Media") != null) {
+                "CB.Media",
+                true) != null) {
             Log.d("Test:Old", mVideoPath);
             Intent data = new Intent();
             mActivity.setResult(RESULT_OK, data);

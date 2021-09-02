@@ -483,15 +483,16 @@ public class FileUtils {
 
     /**
      * Move File
-     *
      * @param context
      * @param filePath
      * @param folder
+     * @param willDeleteSource
      * @return
      */
     public static String moveFile(Context context,
                                   String filePath,
-                                  String folder) {
+                                  String folder,
+                                  Boolean willDeleteSource) {
         try {
             String path = Environment.getExternalStorageDirectory().toString() + File.separator + Environment.DIRECTORY_MOVIES;
             File source = new File(filePath);
@@ -502,7 +503,8 @@ public class FileUtils {
             } else {
                 copyFile(source.getAbsolutePath(), destination.getAbsolutePath());
             }
-            source.delete();
+            if (willDeleteSource)
+                source.delete();
             return destination.getAbsolutePath();
 
         } catch (Exception e) {
