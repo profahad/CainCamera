@@ -2,13 +2,13 @@
     <string name="app_name">UtilsLibrary</string>
 
     <!-- 返回操作 -->
-    <string name="back_pressed_message">退出当前操作?</string>
+    <string name="back_pressed_message">Exit the current operation?</string>
     <!--权限请求-->
-    <string name="request_camera_permission">需要相机权限</string>
-    <string name="request_storage_permission">需要存储权限</string>
-    <string name="request_sound_permission">需要录音权限</string>
+    <string name="request_camera_permission">Camera permission required</string>
+    <string name="request_storage_permission">Need storage permissions</string>
+    <string name="request_sound_permission">Need recording permission</string>
 
-    <string name="btn_dialog_cancel">取消</string>
-    <string name="btn_dialog_ok">确定</string>
-    <string name="music_selection">选择音乐</string>
+    <string name="btn_dialog_cancel">Cancel</string>
+    <string name="btn_dialog_ok">Ok</string>
+    <string name="music_selection">Choose Music</string>
 </resources>

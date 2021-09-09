@@ -794,7 +794,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
                     mPreviewTopbar.resetAllView();
             }
             setShowingSpeedBar(mSpeedBarShowing);
-            if (mBtnStickers != null) {
+            if (mBtnStickers != null && mCameraParam.previewType != PreviewType.VIDEO_HIDE_CONTROLS_ONLY) {
                 mBtnStickers.setVisibility(View.VISIBLE);
             }
             if (mBtnRecord != null) {
@@ -1140,7 +1140,7 @@ public class CameraPreviewFragment extends Fragment implements View.OnClickListe
      */
     public void showConcatProgressDialog() {
         mMainHandler.post(() -> {
-            mProgressDialog = ProgressDialog.show(mActivity, "正在合成", "正在合成");
+            mProgressDialog = ProgressDialog.show(mActivity, "Merging", "Processing..");
         });
     }
 

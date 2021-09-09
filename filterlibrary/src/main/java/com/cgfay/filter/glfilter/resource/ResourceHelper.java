@@ -1,6 +1,8 @@
 package com.cgfay.filter.glfilter.resource;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.text.TextUtils;
 
@@ -9,6 +11,7 @@ import com.cgfay.filter.glfilter.resource.bean.ResourceType;
 import com.cgfay.uitls.utils.FileUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,16 +29,40 @@ public final class ResourceHelper extends ResourceBaseHelper {
 
     }
 
+    public static void initAsset(Context context, String name, int drawable) {
+        FileUtils.createNoMediaFile(FilterHelper.getAssetsDirectory(context));
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), drawable);
+        String path = FilterHelper.getAssetsDirectory(context) + File.separator + name;
+        File file = new File(path);
+        if (!file.exists()) {
+            try {
+                FileOutputStream outStream = new FileOutputStream(file);
+                bm.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                outStream.flush();
+                outStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static String getAssetPath(Context context, String file) {
+        return FilterHelper.getAssetsDirectory(context) + File.separator + file;
+    }
+
     /**
      * 获取资源列表
+     *
      * @return
      */
     public static List<ResourceData> getResourceList() {
         return mResourceList;
     }
 
+
     /**
      * 初始化Assets目录下的资源
+     *
      * @param context
      */
     public static void initAssetsResource(Context context) {
@@ -56,6 +83,7 @@ public final class ResourceHelper extends ResourceBaseHelper {
 
     /**
      * 解压所有资源
+     *
      * @param context
      * @param resourceList 资源列表
      */
@@ -81,6 +109,7 @@ public final class ResourceHelper extends ResourceBaseHelper {
 
     /**
      * 检查资源路径是否存在
+     *
      * @param context
      */
     private static boolean checkResourceDirectory(Context context) {
@@ -94,6 +123,7 @@ public final class ResourceHelper extends ResourceBaseHelper {
 
     /**
      * 获取资源路径
+     *
      * @param context
      * @return
      */
@@ -109,12 +139,12 @@ public final class ResourceHelper extends ResourceBaseHelper {
     }
 
 
-
     /**
      * 删除某个资源
+     *
      * @param context
-     * @param resource  资源对象
-     * @return          删除操作结果
+     * @param resource 资源对象
+     * @return 删除操作结果
      */
     public static boolean deleteResource(Context context, ResourceData resource) {
         if (resource == null || TextUtils.isEmpty(resource.unzipFolder)) {

@@ -18,11 +18,13 @@ import java.util.List;
 public final class FilterHelper extends ResourceBaseHelper {
     // 滤镜存储路径
     private static final String FilterDirectory = "Filter";
+    private static final String AssetsDirectory = "Assets";
     // 滤镜列表
     private static final List<ResourceData> mFilterList = new ArrayList<>();
 
     /**
      * 获取资源列表
+     *
      * @return
      */
     public static List<ResourceData> getFilterList() {
@@ -31,6 +33,7 @@ public final class FilterHelper extends ResourceBaseHelper {
 
     /**
      * 初始化Asset目录下的资源
+     *
      * @param context
      */
     public static void initAssetsFilter(Context context) {
@@ -67,6 +70,7 @@ public final class FilterHelper extends ResourceBaseHelper {
 
     /**
      * 解压所有资源
+     *
      * @param context
      * @param resourceList 资源列表
      */
@@ -93,6 +97,7 @@ public final class FilterHelper extends ResourceBaseHelper {
 
     /**
      * 检查滤镜路径是否存在
+     *
      * @param context
      */
     private static boolean checkFilterDirectory(Context context) {
@@ -104,8 +109,24 @@ public final class FilterHelper extends ResourceBaseHelper {
         return file.mkdirs();
     }
 
+
+    /**
+     * 检查滤镜路径是否存在
+     *
+     * @param context
+     */
+    private static boolean checkAssetsDirectory(Context context) {
+        String resourcePath = getAssetsDirectory(context);
+        File file = new File(resourcePath);
+        if (file.exists()) {
+            return file.isDirectory();
+        }
+        return file.mkdirs();
+    }
+
     /**
      * 获取滤镜路径
+     *
      * @param context
      * @return
      */
@@ -120,11 +141,30 @@ public final class FilterHelper extends ResourceBaseHelper {
         return resourcePath;
     }
 
+
+    /**
+     * 获取滤镜路径
+     *
+     * @param context
+     * @return
+     */
+    public static String getAssetsDirectory(Context context) {
+        String resourcePath;
+        // 判断外部存储是否可用，如果不可用则使用内部存储路径
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            resourcePath = context.getExternalFilesDir(AssetsDirectory).getAbsolutePath();
+        } else { // 使用内部存储
+            resourcePath = context.getFilesDir() + File.separator + AssetsDirectory;
+        }
+        return resourcePath;
+    }
+
     /**
      * 删除某个滤镜
+     *
      * @param context
-     * @param resource  资源对象
-     * @return          删除操作结果
+     * @param resource 资源对象
+     * @return 删除操作结果
      */
     public static boolean deleteFilter(Context context, ResourceData resource) {
         if (resource == null || TextUtils.isEmpty(resource.unzipFolder)) {

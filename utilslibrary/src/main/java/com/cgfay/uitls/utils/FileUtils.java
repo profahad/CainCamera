@@ -483,6 +483,7 @@ public class FileUtils {
 
     /**
      * Move File
+     *
      * @param context
      * @param filePath
      * @param folder
@@ -513,20 +514,26 @@ public class FileUtils {
         }
     }
 
-    private static File getFilePath(Context mContext, String folder, File source) {
-        ContextWrapper mContextWrapper = new ContextWrapper(mContext);
-        File movDirectory = mContextWrapper.getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-        return new File(movDirectory, folder + File.separator + source.getName());
+    public static String getFilePath(String folder, String fileExtension) {
+        String path = Environment.getExternalStorageDirectory().toString() + File.separator + Environment.DIRECTORY_MOVIES;
+        String extension = "";
+        if (TextUtils.equals(fileExtension, "image/"))
+            extension = "%03d.jpg";
+        if (TextUtils.equals(fileExtension, "video/"))
+            extension = ".mp4";
+        File dest = new File(path + File.separator + folder + File.separator + System.currentTimeMillis() + extension);
+        return dest.getAbsolutePath();
     }
 
 
     public static void createFolder(Context context, String folderName) {
         try {
-            ContentResolver resolver = context.getContentResolver();
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/" + folderName);
-            String pathCbRecord = String.valueOf(resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues));
-            File folderCbRecord = new File(pathCbRecord);
+//            ContentResolver resolver = context.getContentResolver();
+//            ContentValues contentValues = new ContentValues();
+//            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/" + folderName);
+//            String pathCbRecord = String.valueOf(resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues));
+            String path = Environment.getExternalStorageDirectory().toString() + File.separator + Environment.DIRECTORY_MOVIES + File.separator + folderName;
+            File folderCbRecord = new File(path);
             boolean isCreate = folderCbRecord.exists();
             if (!isCreate) {
                 folderCbRecord.mkdirs();
